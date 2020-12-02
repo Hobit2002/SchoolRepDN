@@ -1,0 +1,23 @@
+body {
+    background-image: linear-gradient(to right,rgb(0, 148, 255),rgb(255, 0, 0));
+}
+
+.MiddleBlock {
+    position: fixed;
+    top: 30vh;
+    left: 40vw;
+
+    width: 20vw;
+    height: 40vh;
+    text-align: center;
+    
+}
+
+#StartingTitle{
+    font-size:2em;
+}
+
+#Forms{
+    margin:auto;
+    margin-top:15vh;
+}

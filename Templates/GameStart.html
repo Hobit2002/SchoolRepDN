@@ -1,0 +1,55 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Cruci Game</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'WelcomeStyles.css' %}">
+</head>
+<body >
+    <div class="form-row">
+        
+        <div id="ErrorDiv"></div>
+    </div>
+    <div class="MiddleBlock">
+        <div id="Forms">
+        <div id="StartingTitle"> Create or Connect?</div>
+        <form action="NewGame"><button type="submit">New Game</button></form>
+        <input type="text" placeholder="Game code" id="GameToken">
+        </div>
+    </div>
+
+<script>
+    const websocketServerLocation = 'ws://'
+            + window.location.host
+        + '/ws/NewPlayer/'
+
+     function start(websocketServerLocation){
+        var NewPlayer = new WebSocket(websocketServerLocation);
+        NewPlayer.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+                 if(data.name == "Error"){
+                    $(document.getElementById("ErrorDiv")).append(change.message)
+            } if (data.name == "Access") {
+                window.location = "{% url 'Game' %}" + "?Game=" + data.accessCode}
+                
+        }
+         document.querySelector('#GameToken').onkeypress = function (e) {
+             var Key = e.which
+             if (Key == 13) {
+                 GameNum = document.getElementById("GameToken").value
+                 NewPlayer.send(JSON.stringify({
+                "Game": GameNum
+            }));}
+         }
+         NewPlayer.onclose = function () {
+        // Try to reconnect in 5 seconds
+        setTimeout(function(){start(websocketServerLocation)}, 5000);
+            }
+        }
+
+        start(websocketServerLocation)
+</script>
+</body>
+</html>

@@ -1,0 +1,567 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Cruci Game</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'GameStyles.css' %}">
+</head>
+<body bgcolor="green">
+    <div id="TestDiv">
+
+    </div>
+    <div class="form-row">
+        <div class="basedata">
+        <h1> {{GameCode}}</h1>
+        <div id="TurningPlayer"></div>
+        <div id="GamePhase">Preparing</div>
+        <div id="TurningPlayerToken" hidden></div>
+        <div id="ErrorDiv"></div>
+        </div>
+    </div>
+    <div id="DetailsBody" class="CardBody DetailCard" hidden>
+        <div id="DetailsTitle" class="CardTitle CardPart CardRow"><div id="DetailsName" class="CardName CardPart"></div></div>
+        <div id="DetailsCost" class="CardCost CardRow" hidden>
+            <div id="DetailsMoney" class="CardMoney CardPart"></div>
+            <div id="DetailsGlory" class="CardGlory CardPart"></div>
+            <div id="DetailsDiscipline" class="CardDiscipline CardPart"></div>
+        </div>
+        <div id="DetailsIdentity" class="CardIdentity CardPart CardRow">
+            <div id="DetailsSociom" class="CardSociom CardPart"></div>
+            <div id="DetailsOccupation" class="CardOccupation CardPart"></div>
+        </div>
+        <div id="ImageField" class="CardIdentity CardPart CardRow">
+            <img id="DetailsImage" class="detprofile">
+        </div>
+        <div id="DetailsRuleBlock" class="CardRuleBlock CardRow"><div id="DetailsRules" class="CardRules CardPart" data-cardid=""></div></div>
+        <div id="DetailsLegendBlock" class="CardLegendBlock CardRow"><div id="DetailsLegend" class="CardRules CardPart"></div></div>
+        <div id="DetailsdFghtBlock" class="CardFghtBlock CardRow">
+            <div id="DetailsPower" class="CardPower CardPart"></div>
+            <div id="DetailsResiliance" class="CardResiliance CardPart"></div>
+        </div>
+
+    </div>
+    <div hidden id="HiddenTemplates">
+        <div id="FormVoucher" class="ProVoucher">
+            <div class="VoucherCommodity" data-commodity="Money" data-player="bubo">10</div>
+            <div class="VoucherCommodity" data-commodity="Glory" data-player="bubo">10</div>
+            <div class="VoucherCommodity" data-commodity="Discipline" data-player="bubo">10</div>
+        </div>
+        <div id="CommunistTemplate" class="Lurking" ondragover="AllowDrop(event)">
+            <div id="RedBody" class="CardBody RedBody">
+                <div id="RedTitle" class="CardTitle CardPart CardRow"><div id="RedName" class="CardName CardPart"></div></div>
+                <div id="RedIdentity" class="CardIdentity CardPart CardRow" hidden>
+                    <div id="RedSociom" class="CardSociom CardPart"></div>
+                    <div id="RedOccupation" class="CardOccupation CardPart"></div>
+                </div>
+                <div id="ImageField" class="CardIdentity CardPart CardRow">
+                            <img id="RedImage" class="profile">
+                 </div>
+                <div id="RedFghtBlock" class="CardFghtBlock CardRow">
+                    <div id="RedPower" class="CardPower CardPart"></div>
+                    <div id="RedResiliance" class="CardResiliance CardPart"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="GamePannel">
+        <div id="Terrain">
+            <div id="FigureTemplate">
+                <div id="Figure" class="Unuseful" hidden draggable="true" ondragstart="Confronting(event)" data-backid="" data-TerraiNum="" data-PlayerNum="">
+                    <div id="FigureBody" class="CardBody WestBody">
+                        <div id="FigureTitle" class="CardTitle CardPart CardRow"><div id="FigureName" class="CardName CardPart"></div></div>
+                        <div id="FigureCost" class="CardCost CardRow">
+                            <div id="FigureMoney" class="CardMoney CardPart"></div>
+                            <div id="FigureGlory" class="CardGlory CardPart"></div>
+                            <div id="FigureDiscipline" class="CardDiscipline CardPart"></div>
+                        </div>
+                        <div id="FigureIdentity" class="CardIdentity CardPart CardRow" hidden>
+                            <div id="FigureSociom" class="CardSociom CardPart"></div>
+                            <div id="FigureOccupation" class="CardOccupation CardPart"></div>
+                        </div>
+                            <div id="ImageField" class="CardIdentity CardPart CardRow">
+                                <img id="FigureImage" class="profile">
+                            </div>
+                            <div id="FiguredFghtBlock" class="CardFghtBlock CardRow">
+                                <div id="FigurePower" class="CardPower CardPart"></div>
+                                <div id="FigureResiliance" class="CardResiliance CardPart"></div>
+                            </div>
+
+                      
+                    </div>
+                   </div>
+                </div>
+                    <div id="EasternBlock" class="GameRow"></div>
+                    <div id="{{Player.ID}}PlayerTerrains" class="PlayerTerrains">
+                        {% for Player in PlayerList.values %}
+                        <div id="{{Player.ID}}TerrainSet" class="TerrainSet" ondragover="AllowDrop(event)">
+                            <div id="{{Player.ID}}BattleZone" class="LocalScene">
+                            </div>
+                            <div id="{{Player.ID}}Terrain" class="LocalScene">
+                                <input id="{{Player.ID}}FigureNum" type="hidden" value="0">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div id="PlayerLine" class="GameRow">
+
+                    {% for Player in PlayerList.values %}
+                    <div class="PlayerBlock PB{{forloop.counter}}">
+                        <div id="{{Player.ID}}" class="PlayerDiv">
+                            <div id="{{Player.ID}}Overall" class="PlayerOverall">
+                                <div id="{{Player.ID}}Name">{{Player.BioForm}}</div>
+                                <div id="{{Player.ID}}ButtonDiv">
+                                    {% if Player.ID == UserCode %}
+                                    <button id="disconnect">Disconnect</button>
+                                    {% if Role == "GameLeader" %}
+                                    <button id="startGame">Start</button>
+                                    {% endif %}
+                                    {% endif %}
+                                </div>
+
+
+                                <div id="{{Player.ID}}Vouchers">
+
+                                </div>
+                                <div>
+                                    <div id="{{Player.ID}}Lifes" class="Lifes"></div>
+                                </div>
+
+                                <div>
+                                    <div id="{{Player.ID}}SDI" class="SDI"></div>
+                                </div>
+                                <div id="{{Player.ID}}SourceLabels" class="GameRow Statistics">
+                                    <div id="{{Player.ID}}MoneyLabel" class="Money">{{MoneyHTML}}</div>
+                                    <div id="{{Player.ID}}GloryLabel" class="Glory">{{GloryHTML}}</div>
+                                    <div id="{{Player.ID}}DisciplineLabel" class="Discipline">{{DisciplineHTML}}</div>
+                                </div>
+                                <div id="{{Player.ID}}Statistics" class="GameRow Statistics">
+                                    <div id="{{Player.ID}}Money" class="Money"></div>
+                                    <div id="{{Player.ID}}Glory" class="Glory"></div>
+                                    <div id="{{Player.ID}}Discipline" class="Discipline"></div>
+                                </div>
+                            </div>
+                            <div id="{{Player.ID}}Cards" class="Hand">
+                                {% for i in '01234'|make_list %}
+                                <div id="{{Player.ID}}Card{{i}}" class="WholeCard WestCard" draggable="true" ondragstart="Introducing(event)" hidden>
+                                    <div id="{{Player.ID}}CardBody{{i}}" class="CardBody WestBody">
+                                        <div id="{{Player.ID}}CardTitle{{i}}" class="CardTitle CardPart CardRow"><div id="{{Player.ID}}CardName{{i}}" class="CardName CardPart" data-HandNum="{{i}}" data-PlayerNum="{{Player.ID}}"></div></div>
+                                        <div id="{{Player.ID}}CardCost{{i}}" class="CardCost CardRow">
+                                            <div id="{{Player.ID}}CardMoney{{i}}" class="CardMoney CardPart"></div>
+                                            <div id="{{Player.ID}}CardGlory{{i}}" class="CardGlory CardPart"></div>
+                                            <div id="{{Player.ID}}CardDiscipline{{i}}" class="CardDiscipline CardPart"></div>
+                                        </div>
+                                        <div id="{{Player.ID}}ImageField{{i}}" class="CardIdentity CardPart CardRow">
+                                            <img id="{{Player.ID}}CardImage{{i}}" class="profile">
+                                        </div>
+                                        <div id="{{Player.ID}}CardIdentity{{i}}" class="CardIdentity CardPart CardRow" hidden>
+                                            <div id="{{Player.ID}}CardSociom{{i}}" class="CardSociom CardPart"></div>
+                                            <div id="{{Player.ID}}CardOccupation{{i}}" class="CardOccupation CardPart"></div>
+                                        </div>
+                                        <div id="{{Player.ID}}CardFghtBlock{{i}}" class="CardFghtBlock CardRow">
+                                            <div id="{{Player.ID}}CardPower{{i}}" class="CardPower CardPart"></div>
+                                            <div id="{{Player.ID}}CardResiliance{{i}}" class="CardResiliance CardPart"></div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+    <script src="{% static 'jQuery.js' %}" type="text/javascript"></script>
+    <script>
+
+        function ShowDetails(event) {
+            
+            var ID = event.target.id
+            var cardTypes = [/Red/g, /Card/g, /Figure/g]
+            for (i = 0, form = cardTypes[i]; i < cardTypes.length; i++ , form = cardTypes[i]) {
+                var Res = form.exec(ID)
+                if (Res != null) {
+                    var Locality = Res
+                    var LineNum = /\D\d+/g
+                    var Elnum = LineNum.exec(ID)[0]
+                    Elnum = Elnum.replace(/\D/g, '')
+                    var PlayerNum = /\d.\w/g
+                    try { var Plnum = PlayerNum.exec(ID)[0] } catch (err) { var Plnum = ""}
+                    Plnum = Plnum.replace(/\D/g, '')
+                    break
+                }
+            }
+            $.ajax({
+                type: "GET", url: "/CardDetails", data: { Plnum: Plnum, Elnum: Elnum, CardType: form }, success: function (result) {
+
+                    if (form == "/Red/g") {
+                        var SearchTar = document.getElementById("Communist" + Elnum)
+                    } else { var SearchTar = document.getElementById(Plnum + Res + Elnum) }
+                    var Details = document.getElementById("DetailsBody")
+                    var ColourSource = document.getElementById(Plnum + Res+"Body"+Elnum)
+                    var Background = window.getComputedStyle(ColourSource).getPropertyValue("background-color")
+                    console.log(Background)
+                    var TextColour = window.getComputedStyle(SearchTar).getPropertyValue("color")
+                    Details.style.backgroundColor = Background
+                    Details.style.color = TextColour
+                    Details.hidden = false
+                    
+                    var Children = SearchTar.children[0].children
+                    for (ch = 0, child = Children[ch]; ch < Children.length; ch++ , child = Children[ch]) {
+                        var Minichildren = child.children
+                        for (chi = 0, minichild = Minichildren[chi]; chi < Minichildren.length; chi++,minichild = Minichildren[chi]){
+                            var chid = minichild.id
+                            var DetailID = chid.replace(Res, "Details").replace(/\d/g, "")
+                            if (DetailID == "DetailsImage") { document.getElementById(DetailID).src = minichild.src }
+                            else{document.getElementById(DetailID).innerHTML = minichild.innerHTML}
+                        }
+               
+                        
+                    }
+                  
+                    document.getElementById("DetailsRules").innerHTML =  decodeURIComponent(escape(result["Details"]))
+                    document.getElementById("DetailsRules").dataset.cardid = ID
+                    document.getElementById("DetailsLegend").innerHTML = decodeURIComponent(escape(result["Legend"]))
+            }})
+        }
+     const websocketServerLocation = 'ws://'
+            + window.location.host
+            + '/ws/PreparingNews/'
+            + '{{GameCode}}/'
+
+    function start(websocketServerLocation) {
+
+        var PlayerStates = new WebSocket(websocketServerLocation);
+        PlayerStates.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            for (i = 0, change = data[i]; i < data.length; i++ , change = data[i]) {
+                if (change.name == "Trudeau") {
+                    var PlayerNum = change.PlayerNum
+                    //Security risk!!!
+                    document.cookie = "PlayerNum=; expires= Thu, 21 Aug 2014 20:00:00 UTC";
+                } if (change.name == "Error") {
+                    document.getElementById("ErrorDiv").innerHTML = change.message
+                    console.log(change.message)
+                } if (change.name == "NewPlayer") {
+                    var PlayerNum = change.PlayerNum
+                    document.getElementById(PlayerNum + "Name").innerHTML = "Real";
+                } if (change.name == "GameDelta") {
+
+                    // document.getElementById("{{UserCode}}ButtonDiv").innerHTML = "";
+                    //document.getElementById("ErrorDiv").innerHTML = change.GameDelta
+                    var GameDelta = JSON.parse(change.GameDelta)
+                    console.log(GameDelta)
+                    var Players = Object.keys(GameDelta).reverse()
+                    var Data = Object.values(GameDelta).reverse()
+                    for (i = 0, Player = Players[i], Materials = Data[i]; i < Players.length; i++ , Player = Players[i], Materials = Data[i]) {
+                        if (Player == "EasternBlock") {
+                            var CardIDs = Object.keys(Materials)
+                            var Cardcontents = Object.values(Materials)
+                            for (c = 0, CardID = CardIDs[c], CardContent = Cardcontents[c]; c < CardIDs.length; c++ , CardID = CardIDs[c], CardContent = Cardcontents[c]) {
+                                if (document.getElementById("Communist" + CardID) == null) {
+                                    $(document.getElementById("CommunistTemplate")).clone().appendTo(document.getElementById("EasternBlock"));
+                                    var Element = document.getElementsByClassName("Lurking")[1]
+                                    Element.id = "Communist" + CardID
+                                    Element.className = "WholeCard EastCard"
+                                    Element.addEventListener("drop", function (event) {
+                                        var Blocker = event.dataTransfer.getData("Blocker")
+                                        var Owner = event.dataTransfer.getData("Owner")
+                                        var RawID = event.target.id
+                                        var LineNum = /\D\d+/g
+                                        var Elnum = LineNum.exec(RawID)[0]
+                                        var Communist = Elnum.replace(/\D/g,"")
+                                        console.log(Blocker, Communist, Owner)
+                                        PlayerStates.send(JSON.stringify({
+                                            "Act": "Blocking",
+                                            "Blocker": Blocker,
+                                            "Communist": Communist,
+                                            "Owner": Owner
+                                        }))
+                                    })
+                                    Element.addEventListener("dblclick", function (event) { ShowDetails(event) })
+                                    var Children = $(Element).find("*")
+
+                                    for (e = 0, elem = Children[e]; e < Children.length; e++ , elem = Children[e]) {
+                                        elem.id = elem.id + CardID
+                                    }
+                                    $(document.getElementById("EasternBlock")).append(Element)
+                                }
+                                else {
+                                    var Element = document.getElementById("Communist" + CardID)
+                                    $(document.getElementById("EasternBlock")).append(Element)
+                                }
+                                var CardProperities = Object.keys(CardContent)
+                                var CardStats = Object.values(CardContent)
+                                for (d = 0, CardKey = CardProperities[d], CardValue = CardStats[d]; d < CardStats.length; d++ , CardKey = CardProperities[d], CardValue = CardStats[d]) {
+                                    var Address = CardKey + CardID
+                                    document.getElementById(Address).innerHTML = decodeURIComponent(escape(CardValue))
+                                    if (CardKey == "RedName") {document.getElementById('RedImage' + CardID).src = "static/images/Politicians/"+ decodeURIComponent(escape(CardValue))+".jpg"}
+                                }
+                            }
+                        } else if (Player == "Graveyard") {
+                            for (g = 0, CardID = Materials[g]; g < Materials.length; g++ , CardID = Materials[g]) {
+                                $("#" + CardID).remove()
+                            }
+                        } else if (Player == "Alert") { window.alert(Materials) } else {
+                            try {
+                                var PlayerVars = Object.keys(Materials)
+                                var PlayerStats = Object.values(Materials)
+                                for (k = 0, PropertyName = PlayerVars[k], PropertyValue = PlayerStats[k]; k < PlayerVars.length; k++ , PropertyName = PlayerVars[k], PropertyValue = PlayerStats[k]) {
+                                    if (PropertyName == "Hand") {
+                                        var CardIDs = Object.keys(PropertyValue)
+                                        var Cardcontents = Object.values(PropertyValue)
+                                        for (c = 0, CardID = CardIDs[c], CardContent = Cardcontents[c]; c < CardIDs.length; c++ , CardID = CardIDs[c], CardContent = Cardcontents[c]) {
+                                            
+                                            var CardProperities = Object.keys(CardContent)
+                                            var CardStats = Object.values(CardContent)
+                                            for (d = 0, CardKey = CardProperities[d], CardValue = CardStats[d]; d < CardStats.length; d++ , CardKey = CardProperities[d], CardValue = CardStats[d]) {
+                                                var Address = Player + CardKey + CardID
+                                                document.getElementById(Address).innerHTML = decodeURIComponent(escape(CardValue))
+                                                if (CardKey=="CardName") {document.getElementById(Player + 'CardImage' + CardID).src = "static/images/Politicians/"+ decodeURIComponent(escape(CardValue))+".jpg"}
+                                            }
+                                            if (document.getElementById(Player + 'CardName' + CardID).innerHTML == "") { document.getElementById(Player + 'Card' + CardID).hidden = true
+                                            } else {
+                                                document.getElementById(Player + 'Card' + CardID).hidden = false
+                                            }
+                                        }
+                                    } else if (PropertyName == "Terrain") {
+                                        var CardIDs = Object.keys(PropertyValue)
+                                        var Cardcontents = Object.values(PropertyValue)
+                                        for (c = 0, CardID = CardIDs[c], CardContent = Cardcontents[c]; c < CardIDs.length; c++ , CardID = CardIDs[c], CardContent = Cardcontents[c]) {
+                                            if (document.getElementById(Player + "Figure" + CardID) == null) {
+                                                $(document.getElementById("Figure")).clone().appendTo(document.getElementById(Player + "Terrain"));
+                                                var Element = document.getElementsByClassName("Unuseful")[1]
+                                                Element.id = Player + "Figure" + CardID
+                                                Element.hidden = false
+                                                Element.className = "WholeCard WestCard"
+                                                Element.addEventListener("dblclick", function (event) { ShowDetails(event) })
+                                                Element.dataset.backid = CardID
+                                                Element.dataset.terrainum = CardID
+                                                Element.dataset.playernum = Player
+                                                var Coordinates = parseInt(document.getElementById(Player + "FigureNum"))
+                                                var Children = $(Element).find("*")
+
+                                                for (e = 0, elem = Children[e]; e < Children.length; e++ , elem = Children[e]) {
+
+                                                    elem.id = Player + elem.id + CardID
+                                                }
+                                                $(document.getElementById("Terrain" + Player)).append(Element)
+                                                
+                                            } else {
+                                                var Element = document.getElementById(Player + "Figure" + CardID)
+
+                                            }
+                                            var CardProperities = Object.keys(CardContent)
+                                            var CardStats = Object.values(CardContent)
+                                            for (d = 0, CardKey = CardProperities[d], CardValue = CardStats[d]; d < CardStats.length; d++ , CardKey = CardProperities[d], CardValue = CardStats[d]) {
+                                                var Address = Player + CardKey + CardID
+                                                document.getElementById(Address).innerHTML = decodeURIComponent(escape(CardValue))
+                                                if (CardKey == "FigureName") {document.getElementById(Player + 'FigureImage' + CardID).src = "static/images/Politicians/"+ decodeURIComponent(escape(CardValue))+".jpg"}
+                                            }
+                                        }
+                                    } else if (PropertyName == "Attackers") {
+                                        for (PartyNum = 0, CardID = PropertyValue[PartyNum]; PartyNum < PropertyValue.length; PartyNum++, CardID = PropertyValue[PartyNum]) {
+                                            var Attacker = document.getElementById("Communist" + CardID)
+                                            $(document.getElementById(Player + "BattleZone")).append(Attacker)
+                                        }
+                                    }
+
+                                    else {
+
+                                        var ElemID = Player + PropertyName
+                                        if (PropertyName == "Vouchers") {
+                                            document.getElementById(Player + "Vouchers").innerHTML = ""
+                                            voucherCount = parseInt(PropertyValue)
+                                            for (vchn = 0; vchn < voucherCount; vchn++) {
+                                                $(document.getElementById("FormVoucher")).clone().appendTo(document.getElementById(Player + "Vouchers"));
+                                                var Element = document.getElementsByClassName("ProVoucher")[1]
+                                                Element.className = "Voucher"
+                                                Element.dataset.player = Player
+                                                var Children = $(Element).find("*")
+                                                for (e = 0, elem = Children[e]; e < Children.length; e++ , elem = Children[e]) {
+                                                    elem.dataset.player = Player
+                                                    elem.addEventListener("click", function (event) {
+                                                        var Commodity = event.target.dataset.commodity
+                                                        var Owner = event.target.dataset.player
+                                                        var TurningPlayerName = document.getElementById(Owner + "Name").innerHTML
+                                                        TurningPlayerName = TurningPlayerName.replace(/ /gi, "")
+                                                        if (Owner == "{{UserCode}}" || TurningPlayerName == "Daemon") {
+                                                            PlayerStates.send(JSON.stringify({
+                                                                "Act": "UseVoucher",
+                                                                "Commodity": Commodity,
+                                                                "Owner": Owner
+                                                            }))
+                                                        }
+                                                    });
+                                                }
+
+                                            }
+                                        }
+                                        else { (document.getElementById(ElemID).innerHTML = PropertyValue) }
+                                    }
+                                }
+                            } catch (err) {
+                                if (typeof Materials == "string") {
+                                    document.getElementById(Player).innerHTML = Materials
+                                } else {console.log(err)}
+                            }
+                        }
+                    }
+
+                    if (document.getElementById("GamePhase").innerHTML == "Elections") {
+                        document.querySelector("#GoSerious").onclick = function (e) {
+                            PlayerStates.send(JSON.stringify({
+                                "Act": "GoSerious"
+                            }));
+                        }
+                    }
+                    if (document.getElementById("GamePhase").innerHTML == "Politics") {
+                        document.querySelector("#EndTurn").onclick = function (e) {
+                            PlayerStates.send(JSON.stringify({
+                                "Act": "EndTurn"
+                            }));
+                        }
+                    }
+
+                    if (document.getElementById("GamePhase").innerHTML == "Contrarevolution") {
+                    $('.FightEnd').click( function (e) {
+                        var Owner = e.target.dataset.backid
+                        $(e.target).remove()
+                            PlayerStates.send(JSON.stringify({
+                                "Act": "FightEnd",
+                                "Owner" : Owner
+                            }));
+                        })
+                    }
+
+                    if (document.getElementById("GamePhase").innerHTML == "Reformation") {
+                    $('.NothingMore').click( function (e) {
+                        var Owner = e.target.dataset.backid
+                        $(e.target).remove()
+                            PlayerStates.send(JSON.stringify({
+                                "Act": "NothingMore",
+                                "Owner" : Owner
+                            }));
+                        })
+                    }
+                }
+            }
+        }
+        PlayerStates.onopen = function (e) {
+            if ({{ GameStarted }} && document.getElementById("{{UserCode}}Money").innerHTML == "") {
+            console.log('What?')
+            PlayerStates.send(JSON.stringify({
+                "Act": "WhatsGoingOn"
+            }));}}
+
+        if (document.getElementById("GamePhase").innerHTML=="Preparing") {
+        document.querySelector('#disconnect').onclick = function (e) {
+            PlayerStates.send(JSON.stringify({
+                "Act": "Disconnect"
+            }));
+            document.getElementById("{{UserCode}}Overall").innerHTML = "Daemon";
+            }
+        }
+
+        document.getElementById("DetailsRules").onclick = function (event) {
+            CardID = event.target.dataset.cardid
+            var cardTypes = [/Red/g, /Card/g, /Figure/g]
+            for (i = 0, form = cardTypes[i]; i < cardTypes.length; i++ , form = cardTypes[i]) {
+                var Res = form.exec(CardID)
+                if (Res != null) {
+                    var Locality = Res
+                    var LineNum = /\D\d+/g
+                    var Elnum = LineNum.exec(CardID)[0]
+                    Elnum = Elnum.replace(/\D/g, '')
+                    var PlayerNum = /\d.\w/g
+                    try { var Plnum = PlayerNum.exec(CardID)[0] } catch (err) { var Plnum = ""}
+                    Plnum = Plnum.replace(/\D/g, '')
+                    break
+                }
+            }
+            var TurningPlayerToken = document.getElementById("TurningPlayerToken").innerHTML
+            try { var TurningPlayerName = document.getElementById(TurningPlayerToken + "Name").innerHTML }
+            catch (err) {var TurningPlayerName = "Communists"}
+            var GamePhase = document.getElementById("GamePhase").innerHTML
+            console.log( (TurningPlayerName =="Daemon"||TurningPlayerName =="Communists"))
+            if ((TurningPlayerToken == "{{UserCode}}" && "{{UserCode}}" == Plnum) || (TurningPlayerName =="Daemon"||TurningPlayerName =="Communists")) {
+                console.log(Plnum)
+            PlayerStates.send(JSON.stringify({
+                    "Act":"Disposition",
+                   "PlayerNum": Plnum,
+                   "CardID": Elnum
+
+            }))
+                }
+        }
+        
+        $('.DetailCard').on('dblclick',function (event) {
+            document.getElementById("DetailsBody").hidden = true
+        })
+
+        $('.WholeCard').on('dblclick', function (event) {
+            ShowDetails(event)})
+
+        $('.TerrainSet').on("drop", function (event) {
+
+        console.log(event)
+         var HandNum = event.originalEvent.dataTransfer.getData("HandNum")
+         var OwnerNum = event.originalEvent.dataTransfer.getData("PlayerNum")
+         var GamePhase = document.getElementById("GamePhase").innerHTML
+            var TurningPlayerToken = document.getElementById("TurningPlayerToken").innerHTML
+            var TurningPlayerName = document.getElementById(TurningPlayerToken + "Name").innerHTML
+            TurningPlayerName = TurningPlayerName.replace(/ /gi,"")
+            if (GamePhase == "Elections" && ( (TurningPlayerToken == "{{UserCode}}" &&"{{UserCode}}" == OwnerNum) || TurningPlayerName == "Daemon")) {
+                console.log(HandNum)
+                PlayerStates.send(JSON.stringify({
+                    "Act":"NewFigure",
+                    "Vote": HandNum
+                }))
+            }
+        })
+
+
+        {% if Role == "GameLeader" %}
+        if (document.getElementById("GamePhase").innerHTML == "Preparing") {
+            document.querySelector('#startGame').onclick = function (e) {
+            PlayerStates.send(JSON.stringify({
+                "Act": "GameStarted"
+            }));}}
+            {% endif %}
+        PlayerStates.onclose = function(){
+        // Try to reconnect in 5 seconds
+            setTimeout(function () { start(websocketServerLocation) }, 5000);
+            }
+        }
+
+        start(websocketServerLocation)
+
+        function Confronting(event) {
+            event.dataTransfer.setData("Blocker", event.target.dataset.backid);
+            event.dataTransfer.setData("Owner", event.target.dataset.playernum);
+        }
+
+        function Introducing(event) {
+
+            var Elem = event.target.children[0].children[0].children[0]
+            event.dataTransfer.setData("HandNum",Elem.dataset.handnum)
+            event.dataTransfer.setData("PlayerNum", Elem.dataset.playernum)
+            console.log(event.dataTransfer.getData("PlayerNum"))
+        }
+
+       function AllowDrop(event) {
+           event.preventDefault();
+           event.stopPropagation();
+        }
+
+
+
+    </script>
+</body>
+</html>
